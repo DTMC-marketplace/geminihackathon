@@ -298,8 +298,8 @@ def main():
     )
     parser.add_argument(
         "--output", "-o",
-        default="Deployer_Guide.md",
-        help="Output file path (default: Deployer_Guide.md)"
+        default="Output/Deployer_Guide.md",
+        help="Output file path (default: Output/Deployer_Guide.md)"
     )
     parser.add_argument(
         "--name", "-n",

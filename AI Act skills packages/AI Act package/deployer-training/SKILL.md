@@ -29,10 +29,10 @@ python scripts/generate_training.py --path /path/to/repo
    ```bash
    python "AI Act skills packages/AI Act package/deployer-training/scripts/generate_training.py" \
      --path <path-to-repository> \
-     --output "Output/Deployer_Guide.md"
+     --name "Your Product Name"
    ```
 
-3. **Review the output**: Check `Output/Deployer_Guide.md` for the generated documentation.
+3. **Review the output**: Check project root `Output/Deployer_Guide.md` for the generated documentation.
 4. **Human review**: Always recommend human review for accuracy and completeness.
 
 ## What You Get
