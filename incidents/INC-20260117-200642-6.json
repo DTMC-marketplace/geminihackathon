@@ -1,0 +1,44 @@
+{
+  "id": "INC-20260117-200642-6",
+  "title": "AI System Produced Harmful Medical Advice",
+  "description": "The AI system provided incorrect dosage recommendations that could lead to patient harm. The system suggested 10x the recommended dose for a pediatric medication. This was detected through automated monitoring of prescription patterns.",
+  "detected_at": "2026-01-17T20:06:42.690809",
+  "detected_by": "automated",
+  "ai_system_id": "MED-AI-001",
+  "ai_system_name": "Medical Diagnosis Assistant v2.0",
+  "member_state": "Germany",
+  "severity": "medium",
+  "incident_type": null,
+  "is_serious": false,
+  "causal_link_established": true,
+  "causal_link_established_at": "2026-01-17T20:06:45.112856",
+  "reporting_deadline": "2026-01-17T20:06:42.690809",
+  "reporting_timeline_days": 0,
+  "initial_report_submitted": false,
+  "initial_report_submitted_at": null,
+  "complete_report_submitted": false,
+  "complete_report_submitted_at": null,
+  "status": "remediating",
+  "remediation_actions": [
+    "[AI Suggested] Conduct root cause analysis",
+    "[AI Suggested] Implement immediate containment measures",
+    "[AI Suggested] Review and update risk management system (Article 9)",
+    "[AI Suggested] Update technical documentation",
+    "[AI Suggested] Notify affected users if required"
+  ],
+  "remediation_status": "pending",
+  "corrective_actions": [],
+  "authority_notified": false,
+  "authority_notified_at": null,
+  "authority_contact": null,
+  "investigation_notes": [
+    "Causal link established: Root cause analysis confirms AI model error in dosage calculation algorithm. The model incorrectly interpreted pediatric weight-based dosing guidelines."
+  ],
+  "risk_assessment": null,
+  "created_at": "2026-01-17T20:06:42.690824",
+  "updated_at": "2026-01-17T20:06:47.294734",
+  "metadata": {
+    "test": true,
+    "demo": true
+  }
+}

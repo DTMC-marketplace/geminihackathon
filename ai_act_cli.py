@@ -40,6 +40,9 @@ EU_AI_ACT_CLASSIFICATION_DATE = "2025-01-07"
 # Load API key from environment variable
 import os
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+if GEMINI_API_KEY:
+    # Clean API key: strip whitespace and take only first line
+    GEMINI_API_KEY = GEMINI_API_KEY.strip().split('\n')[0].split('\r')[0]
 if not GEMINI_API_KEY:
     print("Error: GEMINI_API_KEY environment variable not set.")
     print("Please set it with: export GEMINI_API_KEY='your-api-key-here'")

@@ -213,55 +213,74 @@ def query_ai_act(question: str, store_name: str = None) -> Tuple[types.GenerateC
     )
 
     # Configure File Search tool using the typed helper classes
-    tools = [
-        types.Tool(
-            file_search=types.FileSearch(
-                file_search_store_names=[store_name]
+    # Check if FileSearch is available (it may not exist in older versions)
+    tools = None
+    if hasattr(types, "FileSearch"):
+        try:
+            tools = [
+                types.Tool(
+                    file_search=types.FileSearch(
+                        file_search_store_names=[store_name]
+                    )
+                )
+            ]
+        except (AttributeError, TypeError) as e:
+            # FileSearch exists but may not be configured correctly
+            print(f"FileSearch configuration error: {e}")
+            tools = None
+    else:
+        # FileSearch not available in this version, will use fallback
+        print("FileSearch tool not available in this google-genai version. Using fallback mechanism.")
+
+    # Only try FileSearch if tools were configured
+    if tools:
+        try:
+            response = client.models.generate_content(
+                model=MODEL_NAME,
+                contents=question,
+                config=types.GenerateContentConfig(
+                    system_instruction=base_system_prompt,
+                    tools=tools
+                )
             )
-        )
-    ]
+            return response, None
+        except errors.ClientError as err:
+            # Fallback for accounts where File Search is unavailable.
+            message = str(err)
+            if "tool_type" not in message and "File Search" not in message:
+                raise
 
-    try:
-        response = client.models.generate_content(
-            model=MODEL_NAME,
-            contents=question,
-            config=types.GenerateContentConfig(
-                system_instruction=base_system_prompt,
-                tools=tools
-            )
-        )
-        return response, None
-    except errors.ClientError as err:
-        # Fallback for accounts where File Search is unavailable.
-        message = str(err)
-        if "tool_type" not in message and "File Search" not in message:
-            raise
+    # Fallback: use local article excerpts as context
+    context_sections = build_manual_context(question)
+    if not context_sections:
+        if tools:
+            # If we tried FileSearch and it failed, and we have no fallback context, raise
+            raise ValueError("File Search unavailable and no local context available.")
+        else:
+            # If FileSearch wasn't available from the start, this is expected
+            raise ValueError("No local context available and FileSearch not supported in this version.")
 
-        context_sections = build_manual_context(question)
-        if not context_sections:
-            raise
+    context_block = "\n\n".join(
+        f"### {section['title']}\n{section['text']}" for section in context_sections
+    )
+    fallback_prompt = (
+        base_system_prompt
+        + "\n\nUse the following excerpts from the EU AI Act and GDPR as context:\n"
+        + context_block
+        + "\n\nIf the answer is not covered, explain that explicitly."
+    )
 
-        context_block = "\n\n".join(
-            f"### {section['title']}\n{section['text']}" for section in context_sections
-        )
-        fallback_prompt = (
-            base_system_prompt
-            + "\n\nUse the following excerpts from the EU AI Act and GDPR as context:\n"
-            + context_block
-            + "\n\nIf the answer is not covered, explain that explicitly."
-        )
+    print("⚠️  File Search tool unavailable. Using local article excerpts as context.")
 
-        print("⚠️  File Search tool unavailable. Using local article excerpts as context.")
-
-        response = client.models.generate_content(
-            model=MODEL_NAME,
-            contents=question,
-            config=types.GenerateContentConfig(
-                system_instruction=fallback_prompt,
-                tools=None
-            )
+    response = client.models.generate_content(
+        model=MODEL_NAME,
+        contents=question,
+        config=types.GenerateContentConfig(
+            system_instruction=fallback_prompt,
+            tools=None
         )
-        return response, context_sections
+    )
+    return response, context_sections
 
 def format_response(response, fallback_sources: Optional[List[dict]] = None):
     """Format the response with citations."""
